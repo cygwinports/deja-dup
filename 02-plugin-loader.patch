@@ -1,0 +1,21 @@
+--- origsrc/deja-dup-24.0/common/CommonUtils.vala	2012-08-21 10:08:23.000000000 -0500
++++ src/deja-dup-24.0/common/CommonUtils.vala	2012-10-05 00:16:21.593136400 -0500
+@@ -396,7 +396,7 @@ void initialize_tool_plugin() throws Err
+     search_path = Path.build_filename(Config.PKG_LIBEXEC_DIR, "tools");
+   engine.add_search_path(search_path, null);
+ 
+-  var info = engine.get_plugin_info("libduplicity.so");
++  var info = engine.get_plugin_info("duplicity");
+   if (info == null)
+     throw new SpawnError.FAILED(_("Could not find backup tool in %s.  Your installation is incomplete.").printf(search_path));
+   if (!engine.try_load_plugin(info))
+--- origsrc/deja-dup-24.0/tools/duplicity/duplicity.plugin	2012-06-05 15:01:18.000000000 -0500
++++ src/deja-dup-24.0/tools/duplicity/duplicity.plugin	2012-10-04 23:13:26.825393400 -0500
+@@ -1,6 +1,6 @@
+ [Plugin]
+ Loader=c
+-Module=libduplicity.so
++Module=duplicity
+ Name=Duplicity Backend
+ Description=Backs up with duplicity
+ Authors=Michael Terry <michael.terry@canonical.com>

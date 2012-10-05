@@ -1,0 +1,43 @@
+--- origsrc/deja-dup-24.0/common/Makefile.am	2012-08-20 19:48:37.000000000 -0500
++++ src/deja-dup-24.0/common/Makefile.am	2012-10-04 23:48:09.386509000 -0500
+@@ -24,7 +24,7 @@ libcommon_la_CFLAGS = \
+ 	-DPKG_LIBEXEC_DIR=\"$(pkglibexecdir)\" \
+ 	-DGETTEXT_PACKAGE=\"$(GETTEXT_PACKAGE)\"
+ 
+-libcommon_la_LDFLAGS = -avoid-version
++libcommon_la_LDFLAGS = -avoid-version -release $(PACKAGE) -no-undefined
+ 
+ libcommon_la_LIBADD = \
+ 	$(COMMON_LIBS) \
+--- origsrc/deja-dup-24.0/nautilus/Makefile.am	2012-08-07 20:01:07.000000000 -0500
++++ src/deja-dup-24.0/nautilus/Makefile.am	2012-10-04 22:58:49.783229400 -0500
+@@ -30,6 +30,6 @@ libdeja_dup_la_CFLAGS = \
+ libdeja_dup_la_SOURCES = \
+ 	NautilusExtension.c NautilusExtension.h
+ 
+-libdeja_dup_la_LDFLAGS = -module -avoid-version
++libdeja_dup_la_LDFLAGS = -module -avoid-version -no-undefined
+ libdeja_dup_la_LIBADD = $(NAUTILUS_LIBS) @INTLLIBS@
+ endif
+--- origsrc/deja-dup-24.0/tools/duplicity/Makefile.am	2012-08-20 19:48:37.000000000 -0500
++++ src/deja-dup-24.0/tools/duplicity/Makefile.am	2012-10-04 23:13:14.950714200 -0500
+@@ -27,7 +27,7 @@ libduplicity_la_CFLAGS = \
+ 	-DPKG_LIBEXEC_DIR=\"$(pkglibexecdir)\" \
+ 	-DGETTEXT_PACKAGE=\"$(GETTEXT_PACKAGE)\"
+ 
+-libduplicity_la_LDFLAGS = -module -avoid-version
++libduplicity_la_LDFLAGS = -module -avoid-version -no-undefined
+ 
+ libduplicity_la_LIBADD = \
+ 	$(COMMON_LIBS) \
+--- origsrc/deja-dup-24.0/widgets/Makefile.am	2012-08-07 20:04:38.000000000 -0500
++++ src/deja-dup-24.0/widgets/Makefile.am	2012-10-04 23:48:24.786389900 -0500
+@@ -25,7 +25,7 @@ libwidgets_la_CFLAGS = \
+ 	-w \
+ 	-DGETTEXT_PACKAGE=\"$(GETTEXT_PACKAGE)\"
+ 
+-libwidgets_la_LDFLAGS = -avoid-version
++libwidgets_la_LDFLAGS = -avoid-version -release $(PACKAGE) -no-undefined
+ 
+ libwidgets_la_LIBADD = \
+ 	$(WIDGETS_LIBS) \
