@@ -3,7 +3,7 @@ inherit gnome2
 NAME="deja-dup"
 VERSION=24.0
 RELEASE=2
-CATEGORY="Gnome"
+CATEGORY="GNOME"
 SUMMARY="GNOME backup tool"
 DESCRIPTION="Deja Dup is a simple backup tool. It hides the complexity
 of backing up the Right Way (encrypted, off-site, and regular) and uses
@@ -21,6 +21,7 @@ deja_dup_CONTENTS="--exclude=*.dll.a etc/ usr/bin/ usr/lib/deja-dup/ usr/share/"
 nautilus_deja_dup_SUMMARY="Nautilus Deja-Dup backup plugin"
 nautilus_deja_dup_REQUIRES=${NAME}
 nautilus_deja_dup_CONTENTS="usr/lib/nautilus/"
+mate_file_manager_deja_dup_CATEGORY="MATE"
 mate_file_manager_deja_dup_SUMMARY="Caja Deja-Dup backup plugin"
 mate_file_manager_deja_dup_REQUIRES=${NAME}
 mate_file_manager_deja_dup_CONTENTS="usr/lib/caja/"
