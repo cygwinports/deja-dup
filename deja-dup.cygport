@@ -1,15 +1,15 @@
 inherit gnome2
 
 NAME="deja-dup"
-VERSION=24.0
-RELEASE=2
+VERSION=26.0
+RELEASE=1
 CATEGORY="GNOME"
 SUMMARY="GNOME backup tool"
 DESCRIPTION="Deja Dup is a simple backup tool. It hides the complexity
 of backing up the Right Way (encrypted, off-site, and regular) and uses
 duplicity as the backend."
 HOMEPAGE="https://launchpad.net/deja-dup/"
-SRC_URI="https://launchpad.net/${NAME}/24/${VERSION}/+download/${NAME}-${VERSION}.tar.xz"
+SRC_URI="https://launchpad.net/deja-dup/${VERSION%%.*}/${VERSION}/+download/${NAME}-${VERSION}.tar.xz"
 PATCH_URI="01-no-undefined.patch
            02-plugin-loader.patch
            03-caja-extension.patch
@@ -17,7 +17,7 @@ PATCH_URI="01-no-undefined.patch
 
 PKG_NAMES="deja-dup nautilus-deja-dup mate-file-manager-deja-dup"
 deja_dup_REQUIRES="duplicity"
-deja_dup_CONTENTS="--exclude=*.dll.a etc/ usr/bin/ usr/lib/deja-dup/ usr/share/"
+deja_dup_CONTENTS="--exclude=*.dll.a etc/ usr/bin/ usr/libexec/ usr/share/"
 nautilus_deja_dup_SUMMARY="Nautilus Deja-Dup backup plugin"
 nautilus_deja_dup_REQUIRES=${NAME}
 nautilus_deja_dup_CONTENTS="usr/lib/nautilus/"
