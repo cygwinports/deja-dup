@@ -1,7 +1,7 @@
 inherit gnome2
 
 NAME="deja-dup"
-VERSION=26.0
+VERSION=28.0
 RELEASE=1
 CATEGORY="GNOME"
 SUMMARY="GNOME backup tool"
