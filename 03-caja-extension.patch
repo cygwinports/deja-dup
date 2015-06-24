@@ -1,37 +1,72 @@
---- origsrc/deja-dup-24.0/configure.ac	2012-09-24 11:34:55.000000000 -0500
-+++ src/deja-dup-24.0/configure.ac	2012-12-23 05:29:15.652765500 -0600
-@@ -153,6 +153,28 @@ AS_IF([test "x$with_nautilus" != xno],
- )
- AM_CONDITIONAL([HAVE_NAUTILUS], [test -n "$NAUTILUS_LIBS"])
+--- origsrc/deja-dup-32.0/CMakeLists.txt	2014-09-20 10:04:47.000000000 -0500
++++ src/deja-dup-32.0/CMakeLists.txt	2015-06-24 17:24:57.396380700 -0500
+@@ -25,6 +25,7 @@ include(DejaDupMacros)
  
-+AC_ARG_WITH([caja],
-+  [AS_HELP_STRING([--with-caja],
-+    [build caja plugin @<:@default=check@:>@])],
-+  [],
-+  [with_caja=check])
-+AS_IF([test "x$with_caja" != xno],
-+  [PKG_CHECK_MODULES(CAJA, libcaja-extension 
-+                           glib-2.0 >= $GLIB_REQ_VER,
-+    [dnl Get caja extensions directory
-+     AS_IF([test "x$with_extensiondir" != xno],
-+       [CAJA_EXTENSION_DIR=`$PKG_CONFIG --variable=extensiondir libcaja-extension`],
-+       [CAJA_EXTENSION_DIR="${PREFIX}/lib/caja/extensions-2.0"])
-+     AC_SUBST(CAJA_EXTENSION_DIR)],
-+    [if test "x$with_caja" != xcheck; then
-+        AC_MSG_FAILURE(
-+          [--with-caja was given, but test for libcaja-extension failed])
-+      fi
-+    ]
-+  )]
-+)
-+AM_CONDITIONAL([HAVE_CAJA], [test -n "$CAJA_LIBS"])
+ deja_option(ENABLE_CCPANEL "Build gnome-control-center panel" CHECK)
+ deja_option(ENABLE_NAUTILUS "Build nautilus plugin" CHECK)
++deja_option(ENABLE_CAJA "Build caja plugin" CHECK)
+ deja_option(ENABLE_UNITY "Integrate with Unity" CHECK)
+ deja_option(ENABLE_UNITY_CCPANEL "Build unity-control-center panel" CHECK)
+ 
+@@ -53,6 +54,14 @@ if(ENABLE_NAUTILUS)
+                   OUTPUT_STRIP_TRAILING_WHITESPACE
+                   ERROR_QUIET)
+ endif()
 +
- AH_TEMPLATE([HAVE_UNITY], [whether libunity is available])
- AC_ARG_WITH([unity],
-   [AS_HELP_STRING([--with-unity],
---- origsrc/deja-dup-28.0/deja-dup/nautilus/CajaExtension.c	1969-12-31 18:00:00.000000000 -0600
-+++ src/deja-dup-28.0/deja-dup/nautilus/CajaExtension.c	2012-12-23 05:31:42.182146500 -0600
-@@ -0,0 +1,339 @@
++deja_enable_option(CAJA libcaja-extension)
++if(ENABLE_CAJA)
++  execute_process(COMMAND ${PKG_CONFIG_EXECUTABLE} --variable=extensiondir libcaja-extension
++                  OUTPUT_VARIABLE CAJA_EXTENSIONDIR
++                  OUTPUT_STRIP_TRAILING_WHITESPACE
++                  ERROR_QUIET)
++endif()
+ 
+ deja_enable_option(UNITY_CCPANEL libunity-control-center)
+ if(ENABLE_UNITY_CCPANEL)
+--- origsrc/deja-dup-32.0/deja-dup/CMakeLists.txt	2014-05-02 11:47:15.000000000 -0500
++++ src/deja-dup-32.0/deja-dup/CMakeLists.txt	2015-06-24 17:21:33.982746100 -0500
+@@ -50,6 +50,7 @@ install(DIRECTORY ui DESTINATION "${PKG_
+ add_subdirectory(help)
+ add_subdirectory(monitor)
+ add_subdirectory(nautilus)
++add_subdirectory(caja)
+ add_subdirectory(preferences)
+ add_subdirectory(tests)
+ add_subdirectory(widgets)
+--- origsrc/deja-dup-32.0/deja-dup/caja/CMakeLists.txt	1969-12-31 18:00:00.000000000 -0600
++++ src/deja-dup-32.0/deja-dup/caja/CMakeLists.txt	2015-06-24 17:22:24.174617000 -0500
+@@ -0,0 +1,28 @@
++# -*- Mode: CMake; indent-tabs-mode: nil; tab-width: 2 -*-
++#
++# This file is part of Déjà Dup.
++# For copyright information, see AUTHORS.
++#
++# Déjà Dup is free software; you can redistribute it and/or modify
++# it under the terms of the GNU General Public License as published by
++# the Free Software Foundation; either version 3 of the License, or
++# (at your option) any later version.
++#
++# Déjà Dup is distributed in the hope that it will be useful, but
++# WITHOUT ANY WARRANTY; without even the implied warranty of
++# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++# General Public License for more details.
++#
++# You should have received a copy of the GNU General Public License
++# along with Déjà Dup.  If not, see <http://www.gnu.org/licenses/>.
++
++if(ENABLE_CAJA)
++add_library(deja-dup-caja MODULE CajaExtension.c)
++target_link_libraries(deja-dup-caja ${GLIB_LDFLAGS} ${CAJA_LDFLAGS})
++set_target_properties(deja-dup-caja PROPERTIES
++                      OUTPUT_NAME deja-dup
++                      INCLUDE_DIRECTORIES "${CMAKE_BINARY_DIR}/libdeja"
++                      COMPILE_FLAGS "${GLIB_CFLAGS} ${CAJA_CFLAGS} ${COMMON_CFLAGS}")
++add_dependencies(deja-dup-caja deja) # needs DirHandling.c
++install(TARGETS deja-dup-caja DESTINATION "${CAJA_EXTENSIONDIR}")
++endif()
+--- origsrc/deja-dup-32.0/deja-dup/caja/CajaExtension.c	1969-12-31 18:00:00.000000000 -0600
++++ src/deja-dup-32.0/deja-dup/caja/CajaExtension.c	2015-06-24 17:24:10.216682200 -0500
+@@ -0,0 +1,338 @@
 +/* -*- Mode: C; indent-tabs-mode: nil; tab-width: 2 -*- */
 +/*
 +    This file is part of Déjà Dup.
@@ -55,7 +90,6 @@
 +#include "DirHandling.c"
 +
 +#include "CajaExtension.h"
-+#include "config.h"
 +#include <libcaja-extension/caja-menu-provider.h>
 +#include <glib/gi18n-lib.h>
 +
@@ -371,8 +405,8 @@
 +  update_include_excludes(); /* will clear it now that settings is NULL */
 +}
 +
---- origsrc/deja-dup-28.0/deja-dup/nautilus/CajaExtension.h	1969-12-31 18:00:00.000000000 -0600
-+++ src/deja-dup-28.0/deja-dup/nautilus/CajaExtension.h	2012-12-23 05:27:02.320139300 -0600
+--- origsrc/deja-dup-32.0/deja-dup/caja/CajaExtension.h	1969-12-31 18:00:00.000000000 -0600
++++ src/deja-dup-32.0/deja-dup/caja/CajaExtension.h	2015-06-24 17:23:13.952464100 -0500
 @@ -0,0 +1,57 @@
 +/* -*- Mode: C; indent-tabs-mode: nil; tab-width: 2 -*- */
 +/*
@@ -431,26 +465,3 @@
 +G_END_DECLS
 +
 +#endif
---- origsrc/deja-dup-28.0/deja-dup/nautilus/Makefile.am	2012-12-23 05:14:17.228378500 -0600
-+++ src/deja-dup-28.0/deja-dup/nautilus/Makefile.am	2012-12-23 05:31:07.837182000 -0600
-@@ -33,3 +33,20 @@ libdeja_dup_la_SOURCES = \
- libdeja_dup_la_LDFLAGS = -module -avoid-version -no-undefined
- libdeja_dup_la_LIBADD = $(NAUTILUS_LIBS) @INTLLIBS@
- endif
-+
-+if HAVE_CAJA
-+cajadir = $(CAJA_EXTENSION_DIR)
-+caja_LTLIBRARIES = libcaja-deja-dup.la
-+
-+libcaja_deja_dup_la_CFLAGS = \
-+	-I$(top_srcdir)/libdeja \
-+	$(CAJA_CFLAGS) \
-+	-DPKG_LIBEXEC_DIR=\"$(pkglibexecdir)\" \
-+	-DGETTEXT_PACKAGE=\"$(GETTEXT_PACKAGE)\"
-+
-+libcaja_deja_dup_la_SOURCES = \
-+	CajaExtension.c CajaExtension.h
-+
-+libcaja_deja_dup_la_LDFLAGS = -module -avoid-version -no-undefined
-+libcaja_deja_dup_la_LIBADD = $(CAJA_LIBS) @INTLLIBS@
-+endif

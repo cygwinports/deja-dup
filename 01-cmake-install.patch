@@ -1,0 +1,24 @@
+--- origsrc/deja-dup-32.0/deja-dup/widgets/CMakeLists.txt	2014-04-28 20:26:27.000000000 -0500
++++ src/deja-dup-32.0/deja-dup/widgets/CMakeLists.txt	2015-06-24 17:20:15.500257200 -0500
+@@ -55,6 +55,8 @@ vala_precompile(VALA_C ConfigBool.vala
+ add_library(widgets SHARED ${VALA_C})
+ target_link_libraries(widgets deja ${GTK_LDFLAGS} ${NOTIFY_LDFLAGS} ${PEAS_LDFLAGS} ${SECRET_LDFLAGS} ${UNITY_LDFLAGS})
+ set_target_properties(widgets PROPERTIES
++                      OUTPUT_NAME "deja-dup-widgets"
+                       INCLUDE_DIRECTORIES "${CMAKE_BINARY_DIR}/libdeja;${CMAKE_SOURCE_DIR}/libdeja"
+                       COMPILE_FLAGS "${GTK_CFLAGS} ${NOTIFY_CFLAGS} ${PEAS_CFLAGS} ${SECRET_CFLAGS} ${UNITY_CFLAGS} ${COMMON_CFLAGS}")
+-install(TARGETS widgets DESTINATION "${PKG_LIBDIR}")
++install(TARGETS widgets LIBRARY DESTINATION "${PKG_LIBDIR}"
++                        RUNTIME DESTINATION bin)
+--- origsrc/deja-dup-32.0/libdeja/CMakeLists.txt	2014-04-28 20:26:33.000000000 -0500
++++ src/deja-dup-32.0/libdeja/CMakeLists.txt	2015-06-24 17:20:55.201528000 -0500
+@@ -52,7 +52,8 @@ target_link_libraries(deja ${GLIB_LDFLAG
+ set_target_properties(deja PROPERTIES
+                       INCLUDE_DIRECTORIES "${CMAKE_CURRENT_SOURCE_DIR}"
+                       COMPILE_FLAGS "${GLIB_CFLAGS} ${PEAS_CFLAGS} ${SECRET_CFLAGS} ${COMMON_CFLAGS}")
+-install(TARGETS deja DESTINATION "${PKG_LIBDIR}")
++install(TARGETS deja LIBRARY DESTINATION "${PKG_LIBDIR}"
++                     RUNTIME DESTINATION bin)
+ 
+ add_subdirectory(tests)
+ add_subdirectory(tools)
