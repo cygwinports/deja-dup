@@ -1,7 +1,7 @@
 inherit cmake
 
 NAME="deja-dup"
-VERSION=32.0
+VERSION=34.0
 RELEASE=1
 CATEGORY="GNOME"
 SUMMARY="GNOME backup tool"
