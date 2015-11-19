@@ -33,3 +33,28 @@
  add_subdirectory(preferences)
  add_subdirectory(tests)
  add_subdirectory(widgets)
+--- origsrc/deja-dup-34.0/deja-dup/caja/CMakeLists.txt	1969-12-31 18:00:00.000000000 -0600
++++ src/deja-dup-34.0/deja-dup/caja/CMakeLists.txt	2015-11-18 19:17:15.888685200 -0600
+@@ -0,0 +1,12 @@
++if(ENABLE_CAJA)
++add_library(caja-deja-dup MODULE CajaExtension.c)
++target_link_libraries(caja-deja-dup ${GLIB_LDFLAGS} ${CAJA_LDFLAGS})
++set_target_properties(caja-deja-dup PROPERTIES
++                      INCLUDE_DIRECTORIES "${CMAKE_BINARY_DIR}/libdeja"
++                      COMPILE_FLAGS "${GLIB_CFLAGS} ${CAJA_CFLAGS} ${COMMON_CFLAGS}")
++install(TARGETS caja-deja-dup DESTINATION "${CAJA_EXTENSIONDIR}")
++configure_file(libcaja-deja-dup.caja-extension.in
++		libcaja-deja-dup.caja-extension @ONLY)
++install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libcaja-deja-dup.caja-extension
++              DESTINATION share/caja/extensions)
++endif()
+--- origsrc/deja-dup-34.0/deja-dup/caja/libcaja-deja-dup.caja-extension.in	1969-12-31 18:00:00.000000000 -0600
++++ src/deja-dup-34.0/deja-dup/caja/libcaja-deja-dup.caja-extension.in	2015-11-18 19:05:52.960464300 -0600
+@@ -0,0 +1,7 @@
++[Caja Extension]
++Icon=deja-dup
++Name=Deja-Dup
++Description=Restore or revert files from backups
++Version=@VERSION@
++Author=Michael Terry <mike@mterry.name>
++Copyright=Copyright (C) 2004–2005 Free Software Foundation, Inc.\nCopyright (C) 2009–2011 Michael Terry <mike@mterry.name>
