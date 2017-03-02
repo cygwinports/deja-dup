@@ -1,7 +1,7 @@
 inherit cmake
 
 NAME="deja-dup"
-VERSION=34.0
+VERSION=34.3
 RELEASE=1
 CATEGORY="GNOME"
 SUMMARY="GNOME backup tool"
@@ -14,6 +14,7 @@ PATCH_URI="01-cmake-install.patch
            02-plugin-loader.patch
            03-caja-extension.patch
            04-help2man-PATH.patch
+           05-packagekit.patch
 "
 
 PKG_NAMES="deja-dup nautilus-deja-dup caja-deja-dup"
@@ -33,11 +34,13 @@ DIFF_EXCLUDES="*.c *.h *.stamp *.vapi"
 
 CYGPORT_USE_UNSTABLE_API=1
 src_patch_hook() {
-	inform "Creating Caja extension"
+	inform "Creating Caja/Nemo extensions"
 	for f in NautilusExtension.c NautilusExtension.h
 	do
 		sed -e 's/NAUTILUS/CAJA/g;s/Nautilus/Caja/g;s/nautilus/caja/g' \
 			deja-dup/nautilus/$f > deja-dup/caja/${f/Nautilus/Caja}
+		sed -e 's/NAUTILUS/NEMO/g;s/Nautilus/Nemo/g;s/nautilus/nemo/g' \
+			deja-dup/nautilus/$f > deja-dup/caja/${f/Nautilus/Nemo}
 	done
 }
 
@@ -45,4 +48,5 @@ CYGCMAKE_ARGS="
 	-DCMAKE_INSTALL_SYSCONFDIR=/etc
 	-DENABLE_NAUTILUS=1
 	-DENABLE_CAJA=1
+	-DENABLE_NEMO=0
 "

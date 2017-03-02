@@ -1,0 +1,53 @@
+--- origsrc/deja-dup-34.3/CMakeLists.txt	2017-03-02 12:26:26.776101800 -0600
++++ src/deja-dup-34.3/CMakeLists.txt	2017-03-02 12:27:32.449738500 -0600
+@@ -37,7 +37,7 @@ deja_check_modules(GLIB REQUIRED glib-2.
+ deja_check_modules(GTK REQUIRED gtk+-3.0>=3.6)
+ deja_check_modules(NOTIFY REQUIRED libnotify>=0.7)
+ deja_check_modules(PEAS REQUIRED libpeas-1.0)
+-deja_check_modules(PK REQUIRED packagekit-glib2)
++deja_check_modules(PK packagekit-glib2)
+ deja_check_modules(SECRET REQUIRED libsecret-1)
+ 
+ # This is obnoxious.
+--- origsrc/deja-dup-34.3/deja-dup/preferences/Preferences.vala	2015-11-29 07:58:23.000000000 -0600
++++ src/deja-dup-34.3/deja-dup/preferences/Preferences.vala	2017-03-02 12:41:19.269186300 -0600
+@@ -62,6 +62,7 @@ public class Preferences : Gtk.Grid
+     }
+   }
+ 
++#if HAVE_PK
+   async void install_duplicity()
+   {
+     backup_button.sensitive = false;
+@@ -119,6 +120,7 @@ public class Preferences : Gtk.Grid
+     backup_button.sensitive = true;
+     restore_button.sensitive = true;
+   }
++#endif
+ 
+   Gtk.Widget make_settings_page()
+   {
+@@ -201,9 +203,11 @@ public class Preferences : Gtk.Grid
+     (w as Gtk.Button).clicked.connect((b) => {
+       if (duplicity_installed) {
+         run_deja_dup("--restore", b.get_display().get_app_launch_context());
++#if HAVE_PK
+       } else {
+         restore_progress.visible = true;
+         install_duplicity.begin();
++#endif
+       }
+     });
+     restore_button = w as Gtk.Button;
+@@ -247,9 +251,11 @@ public class Preferences : Gtk.Grid
+     (w as Gtk.Button).clicked.connect((b) => {
+       if (duplicity_installed) {
+         run_deja_dup("--backup", b.get_display().get_app_launch_context());
++#if HAVE_PK
+       } else {
+         backup_progress.visible = true;
+         install_duplicity.begin();
++#endif
+       }
+     });
+     backup_button = w as Gtk.Button;

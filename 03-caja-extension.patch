@@ -1,14 +1,15 @@
 --- origsrc/deja-dup-32.0/CMakeLists.txt	2014-09-20 10:04:47.000000000 -0500
 +++ src/deja-dup-32.0/CMakeLists.txt	2015-06-24 17:24:57.396380700 -0500
-@@ -25,6 +25,7 @@ include(DejaDupMacros)
+@@ -25,6 +25,8 @@ include(DejaDupMacros)
  
  deja_option(ENABLE_CCPANEL "Build gnome-control-center panel" CHECK)
  deja_option(ENABLE_NAUTILUS "Build nautilus plugin" CHECK)
 +deja_option(ENABLE_CAJA "Build caja plugin" CHECK)
++deja_option(ENABLE_NEMO "Build nemo plugin" CHECK)
  deja_option(ENABLE_UNITY "Integrate with Unity" CHECK)
  deja_option(ENABLE_UNITY_CCPANEL "Build unity-control-center panel" CHECK)
  
-@@ -53,6 +54,14 @@ if(ENABLE_NAUTILUS)
+@@ -53,6 +55,22 @@ if(ENABLE_NAUTILUS)
                    OUTPUT_STRIP_TRAILING_WHITESPACE
                    ERROR_QUIET)
  endif()
@@ -20,28 +21,38 @@
 +                  OUTPUT_STRIP_TRAILING_WHITESPACE
 +                  ERROR_QUIET)
 +endif()
++
++deja_enable_option(NEMO libnemo-extension)
++if(ENABLE_NEMO)
++  execute_process(COMMAND ${PKG_CONFIG_EXECUTABLE} --variable=extensiondir libnemo-extension
++                  OUTPUT_VARIABLE NEMO_EXTENSIONDIR
++                  OUTPUT_STRIP_TRAILING_WHITESPACE
++                  ERROR_QUIET)
++endif()
  
  deja_enable_option(UNITY_CCPANEL libunity-control-center)
  if(ENABLE_UNITY_CCPANEL)
 --- origsrc/deja-dup-32.0/deja-dup/CMakeLists.txt	2014-05-02 11:47:15.000000000 -0500
 +++ src/deja-dup-32.0/deja-dup/CMakeLists.txt	2015-06-24 17:21:33.982746100 -0500
-@@ -50,6 +50,7 @@ install(DIRECTORY ui DESTINATION "${PKG_
+@@ -50,6 +50,8 @@ install(DIRECTORY ui DESTINATION "${PKG_
  add_subdirectory(help)
  add_subdirectory(monitor)
  add_subdirectory(nautilus)
 +add_subdirectory(caja)
++add_subdirectory(nemo)
  add_subdirectory(preferences)
  add_subdirectory(tests)
  add_subdirectory(widgets)
 --- origsrc/deja-dup-34.0/deja-dup/caja/CMakeLists.txt	1969-12-31 18:00:00.000000000 -0600
 +++ src/deja-dup-34.0/deja-dup/caja/CMakeLists.txt	2015-11-18 19:17:15.888685200 -0600
-@@ -0,0 +1,12 @@
+@@ -0,0 +1,13 @@
 +if(ENABLE_CAJA)
 +add_library(caja-deja-dup MODULE CajaExtension.c)
 +target_link_libraries(caja-deja-dup ${GLIB_LDFLAGS} ${CAJA_LDFLAGS})
 +set_target_properties(caja-deja-dup PROPERTIES
 +                      INCLUDE_DIRECTORIES "${CMAKE_BINARY_DIR}/libdeja"
 +                      COMPILE_FLAGS "${GLIB_CFLAGS} ${CAJA_CFLAGS} ${COMMON_CFLAGS}")
++add_dependencies(caja-deja-dup deja) # needs DirHandling.c
 +install(TARGETS caja-deja-dup DESTINATION "${CAJA_EXTENSIONDIR}")
 +configure_file(libcaja-deja-dup.caja-extension.in
 +		libcaja-deja-dup.caja-extension @ONLY)
@@ -58,3 +69,15 @@
 +Version=@VERSION@
 +Author=Michael Terry <mike@mterry.name>
 +Copyright=Copyright (C) 2004–2005 Free Software Foundation, Inc.\nCopyright (C) 2009–2011 Michael Terry <mike@mterry.name>
+--- origsrc/deja-dup-34.0/deja-dup/nemo/CMakeLists.txt	1969-12-31 18:00:00.000000000 -0600
++++ src/deja-dup-34.0/deja-dup/nemo/CMakeLists.txt	2015-11-18 19:17:15.888685200 -0600
+@@ -0,0 +1,9 @@
++if(ENABLE_NEMO)
++add_library(nemo-deja-dup MODULE NemoExtension.c)
++target_link_libraries(nemo-deja-dup ${GLIB_LDFLAGS} ${NEMO_LDFLAGS})
++set_target_properties(nemo-deja-dup PROPERTIES
++                      INCLUDE_DIRECTORIES "${CMAKE_BINARY_DIR}/libdeja"
++                      COMPILE_FLAGS "${GLIB_CFLAGS} ${NEMO_CFLAGS} ${COMMON_CFLAGS}")
++add_dependencies(nemo-deja-dup deja) # needs DirHandling.c
++install(TARGETS nemo-deja-dup DESTINATION "${NEMO_EXTENSIONDIR}")
++endif()
